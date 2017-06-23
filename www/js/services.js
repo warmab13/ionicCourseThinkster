@@ -1,13 +1,33 @@
 angular.module('songhop.services', [])
-.factory('User', function(){
+.factory('User', function($http, SERVER){
     var o = {
-        favorites: [] 
+        username: false,
+        session_id: false,
+        favorites: [],
+        newFavorites: 0 
+    }
+
+    o.auth = function(username, signingUp){
+        var authRoute;
+
+        if(signingUp){
+            authRoute = 'signup'
+        }else{
+            authRoute = 'login'
+        }
+
+        return $http.post(SERVER.url + '/' + authRoute, {username: username});
     }
 
     o.addSongToFavorites = function(song){
         if(!song) return false;
 
         o.favorites.unshift(song);
+        o.newFavorites++;
+    }
+
+    o.favoriteCount = function(){
+        return o.newFavorites;
     }
 
     o.removeSongFromFavorites = function(song, index){
